@@ -1,0 +1,36 @@
+import serial
+import time
+import RPi.GPIO as GPIO
+
+# Define the serial port and pins
+serial_port = "/dev/ttyS1"  # Adjust this based on your Orange Pi's serial port
+de_pin = 17  # GPIO pin connected to DE (Driver Enable) of MAX485
+re_pin = 27  # GPIO pin connected to RE (Receiver Enable) of MAX485
+baud_rate = 9600
+
+# Setup GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(de_pin, GPIO.OUT)
+GPIO.setup(re_pin, GPIO.OUT)
+
+# Initialize Serial and set DE and RE to transmit mode
+ser = serial.Serial(serial_port, baud_rate, timeout=1)
+GPIO.output(de_pin, GPIO.HIGH)
+GPIO.output(re_pin, GPIO.HIGH)
+
+try:
+    while True:
+        # Send a character to Arduino
+        message = "A"  # You can change this message
+        ser.write(message.encode())
+        print(f"Orange Pi Sent: {message}")
+
+        # Wait for a short duration
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    # Close the serial connection and cleanup GPIO on keyboard interrupt
+    ser.close()
+    GPIO.cleanup()
+    print("Serial connection closed.")
+
