@@ -1,36 +1,73 @@
+import OPi.GPIO as GPIO
 import serial
 import time
-import RPi.GPIO as GPIO
 
-# Define the serial port and pins
-serial_port = "/dev/ttyS1"  # Adjust this based on your Orange Pi's serial port
-de_pin = 17  # GPIO pin connected to DE (Driver Enable) of MAX485
-re_pin = 27  # GPIO pin connected to RE (Receiver Enable) of MAX485
+# Define GPIO pins for serial communication
+TX_PIN = 19  # Choose a GPIO pin
+RX_PIN = 21  # Choose a different GPIO pin
+
+# Define GPIO pins for DE (Driver Enable) and RE (Receiver Enable)
+DE_PIN = 16
+RE_PIN = 18
+
+# Define baud rate
 baud_rate = 9600
 
-# Setup GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(de_pin, GPIO.OUT)
-GPIO.setup(re_pin, GPIO.OUT)
+# Configure GPIO
+GPIO.setboard(GPIO.PCPCPLUS)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(TX_PIN, GPIO.OUT)
+GPIO.setup(RX_PIN, GPIO.IN)
+GPIO.setup(DE_PIN, GPIO.OUT)
+GPIO.setup(RE_PIN, GPIO.OUT)
 
-# Initialize Serial and set DE and RE to transmit mode
-ser = serial.Serial(serial_port, baud_rate, timeout=1)
-GPIO.output(de_pin, GPIO.HIGH)
-GPIO.output(re_pin, GPIO.HIGH)
+# Create a Serial object
+ser = serial.Serial()
 
 try:
+    # Configure the serial port
+    ser.port = '/dev/ttyS1'  # Adjust this based on your Orange Pi's serial port
+    ser.baudrate = baud_rate
+    ser.timeout = 1  # 1 second timeout
+
+    # Open the serial port
+    ser.open()
+    if ser.is_open:
+        print(f"Serial port {ser.port} opened successfully.")
+    else:
+        print(f"Failed to open serial port {ser.port}.")
+
     while True:
+        # Enable transmission on MAX485
+        GPIO.output(DE_PIN, GPIO.HIGH)
+        GPIO.output(RE_PIN, GPIO.HIGH)
+
         # Send a character to Arduino
         message = "A"  # You can change this message
         ser.write(message.encode())
         print(f"Orange Pi Sent: {message}")
+
+        # Disable transmission on MAX485
+        GPIO.output(DE_PIN, GPIO.LOW)
+        GPIO.output(RE_PIN, GPIO.LOW)
 
         # Wait for a short duration
         time.sleep(1)
 
 except KeyboardInterrupt:
     # Close the serial connection and cleanup GPIO on keyboard interrupt
-    ser.close()
+    if ser.is_open:
+        ser.close()
+        print("Serial connection closed.")
+    else:
+        print("Serial port was not open.")
     GPIO.cleanup()
-    print("Serial connection closed.")
+
+except serial.SerialException as e:
+    print(f"Serial error: {e}")
+    if ser.is_open:
+        ser.close()
+        print("Serial connection closed due to error.")
+    GPIO.cleanup()
+
 
