@@ -1,36 +1,39 @@
 import serial
 import time
-import RPi.GPIO as GPIO
 
-# Define the serial port and pins
-serial_port = "/dev/ttyS1"  # Adjust this based on your Orange Pi's serial port
-de_pin = 17  # GPIO pin connected to DE (Driver Enable) of MAX485
-re_pin = 27  # GPIO pin connected to RE (Receiver Enable) of MAX485
+serial_port = "/dev/ttyS0"  # Adjust this based on your Orange Pi's serial port
 baud_rate = 9600
 
-# Setup GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(de_pin, GPIO.OUT)
-GPIO.setup(re_pin, GPIO.OUT)
-
-# Initialize Serial and set DE and RE to transmit mode
-ser = serial.Serial(serial_port, baud_rate, timeout=1)
-GPIO.output(de_pin, GPIO.HIGH)
-GPIO.output(re_pin, GPIO.HIGH)
+ser = serial.Serial()
 
 try:
+    ser.port = serial_port
+    ser.baudrate = baud_rate
+    ser.timeout = 1
+
+    ser.open()
+    if ser.is_open:
+        print(f"Serial port {serial_port} opened successfully.")
+    else:
+        print(f"Failed to open serial port {serial_port}.")
+
     while True:
-        # Send a character to Arduino
-        message = "A"  # You can change this message
+        message = "Hello from Orange Pi!"
         ser.write(message.encode())
         print(f"Orange Pi Sent: {message}")
 
-        # Wait for a short duration
         time.sleep(1)
 
 except KeyboardInterrupt:
-    # Close the serial connection and cleanup GPIO on keyboard interrupt
-    ser.close()
-    GPIO.cleanup()
-    print("Serial connection closed.")
+    if ser.is_open:
+        ser.close()
+        print("Serial connection closed.")
+    else:
+        print("Serial port was not open.")
+
+except serial.SerialException as e:
+    print(f"Serial error: {e}")
+    if ser.is_open:
+        ser.close()
+        print("Serial connection closed due to error.")
 
