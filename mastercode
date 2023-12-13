@@ -3,8 +3,8 @@ import serial
 import time
 
  # Define GPIO pins for serial communication
-TX_PIN = 19  # Choose a GPIO pin
-RX_PIN = 21  # Choose a different GPIO pin
+TX_PIN = 8  # Choose a GPIO pin
+RX_PIN = 10  # Choose a different GPIO pin
 
 # Define GPIO pins for DE (Driver Enable) and RE (Receiver Enable)
 DE_PIN = 16
@@ -14,7 +14,6 @@ RE_PIN = 18
 baud_rate = 9600
 
 # Configure GPIO
-GPIO.setboard(GPIO.PCPCPLUS)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(TX_PIN, GPIO.OUT)
 GPIO.setup(RX_PIN, GPIO.IN)
@@ -23,7 +22,6 @@ GPIO.setup(RE_PIN, GPIO.OUT)
 
 # Create a Serial object
 ser = serial.Serial()
-
 try:
     # Configure the serial port
     ser.port = '/dev/ttyS1'  # Adjust this based on your Orange Pi's serial port
@@ -56,25 +54,18 @@ try:
 
 except KeyboardInterrupt:
     # Close the serial connection and cleanup GPIO on keyboard interrupt
->>>>>>> 3f2b981dee3091b2d861e4887af0be056cf2f99a
     if ser.is_open:
         ser.close()
         print("Serial connection closed.")
     else:
         print("Serial port was not open.")
-<<<<<<< HEAD
-=======
     GPIO.cleanup()
->>>>>>> 3f2b981dee3091b2d861e4887af0be056cf2f99a
 
 except serial.SerialException as e:
     print(f"Serial error: {e}")
     if ser.is_open:
         ser.close()
         print("Serial connection closed due to error.")
-<<<<<<< HEAD
-=======
     GPIO.cleanup()
 
->>>>>>> 3f2b981dee3091b2d861e4887af0be056cf2f99a
 
