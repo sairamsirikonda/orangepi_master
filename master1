@@ -1,24 +1,17 @@
 import time
 import serial
-import OPi.GPIO as GPIO
 
-<<<<<<< HEAD
-# Serial configuration
-serial_port = '/dev/ttyS0'  # Adjust the serial port based on your Orange Pi configuration
-baudrate = 9600
-=======
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(7, GPIO.OUT, initial=GPIO.HIGH)
->>>>>>> origin/main
 
-send = serial.Serial(port='/dev/ttyS1', baudrate=9600, parity=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+
+
+
+send = serial.Serial(port='/dev/ttyS1', baudrate=9600, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS, timeout=1)
 
 i = [0, 10, 45, 90, 135, 180, 225, 225, 225, 180, 135, 90, 45, 10, 0]
 
 while True:
-    for x in i:
-        send.write(bytes([x]))
-        print(x)
+    for PWM in i:
+        send.write(f'{PWM}\n'.encode())
+        print(f'sent PWM value:{PWM}')
         time.sleep(1.5)
 
