@@ -1,0 +1,19 @@
+import time
+import serial
+
+send = serial.Serial(port='/dev/ttyS1', baudrate=9600, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS, timeout=1)
+receive = serial.Serial(port='/dev/ttyS1', baudrate=9600, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS, timeout=1)
+
+message_to_send = "Hello Arduino!"
+
+while True:
+    # Send data to Arduino
+    send.write(message_to_send.encode())
+    print(f'Sent message to Arduino: {message_to_send}')
+
+    # Receive data from Arduino
+    if receive.in_waiting > 0:
+        received_message = receive.readline().decode().strip()
+        print(f'Received message from Arduino: {received_message}')
+
+    time.sleep(1)  # Adjust the delay as needed
