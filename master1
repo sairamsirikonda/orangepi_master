@@ -2,7 +2,7 @@ import serial
 import time
 
 # Serial configuration
-serial_port = '/dev/ttyS1'  # Adjust the serial port based on your Orange Pi configuration
+serial_port = '/dev/ttyS0'  # Adjust the serial port based on your Orange Pi configuration
 baudrate = 9600
 
 ser = serial.Serial(serial_port, baudrate, timeout=0.1)
