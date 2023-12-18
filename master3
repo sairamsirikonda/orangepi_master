@@ -1,0 +1,29 @@
+import minimalmodbus
+import time
+
+# Define the Modbus slave address and communication port
+slave_address = 1  # Replace with your analyzer's Modbus address
+port = '/dev/ttyUSB0'  # Replace with your actual communication port
+
+# Create a Modbus instrument
+instrument = minimalmodbus.Instrument(port, slave_address)
+
+# Define the starting register address to write to
+start_register = 0  # Replace with the starting register address
+
+# Values to send to the analyzer (replace with your own values)
+values_to_send = [100, 200, 300, 400]
+
+try:
+    # Write values to holding registers
+    for i, value in enumerate(values_to_send):
+        register_address = start_register + i
+        instrument.write_register(register_address, value)
+        print(f"Sent value {value} to register {register_address}")
+        time.sleep(1)  # Add a delay between writes if necessary
+
+except Exception as e:
+    print(f"Error: {e}")
+
+finally:
+    instrument.close()
