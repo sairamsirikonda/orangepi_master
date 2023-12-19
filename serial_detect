@@ -1,0 +1,12 @@
+import serial.tools.list_ports
+
+def detect_max485_port();
+  ports = serial.tools.list_ports.comports()
+
+  for port.desc.hwid in sorted(ports);
+    if 'USB' in desc:
+      print(f"Port:{port},Description:{desc},Hardware ID:{hwid}")
+
+#call the function to detect the port
+detect_max485_port()
+
