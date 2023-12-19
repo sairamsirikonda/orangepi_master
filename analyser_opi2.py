@@ -1,22 +1,28 @@
 import serial
 
-
-#configuration
-slave_address = 0x01 #slave address
-baud_rate = 9600 
+# Configuration
+slave_address = 0x01  # Slave address
+baud_rate = 9600
 serial_port = '/dev/ttyUSB0'
 
-#create serial connection
-ser = serial.Serial(port=serial_port,baudrate=baud_rate,timeout=1)
+# Create serial connection
+ser = serial.Serial(port=serial_port, baudrate=baud_rate, timeout=1)
 
 def read_from_slave():
-  command_to_send = bytes([slave_address,0x03,0x00,0x00,0x02]) #example command modify as needed
-  ser.write("hello analyser")
+    # Example Modbus read command (read two registers starting from address 0)
+    command_to_send = bytes([slave_address, 0x03, 0x00, 0x00, 0x00, 0x02, 0x84, 0x0A])  # Modify as needed
+    ser.write(command_to_send)
 
-  #Read response
-  response = ser.read(8) #adjust the number of bytes to read on your expected response length
-  return response
+    # Read response
+    response = ser.read(8)  # Adjust the number of bytes to read based on your expected response length
+    return response
 
-#Example usage
-data = read_from_slave()
-print(data) #Output the received data
+try:
+    # Example usage
+    data = read_from_slave()
+    print(data)  # Output the received data
+except Exception as e:
+    print(f"Error: {e}")
+finally:
+    # Close the serial connection when done
+    ser.close()
