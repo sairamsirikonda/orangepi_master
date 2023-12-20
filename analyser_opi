@@ -1,22 +1,23 @@
-from pymodbus.server.sync import StartTcpServer
-from pymodbus.datastore import ModbusSequentialDataBlock
-from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
+import serial
 
-# Define the Modbus slave address
-slave_address = 1
+# Configuration
+slave_address = 0x01  # Slave address
+baud_rate = 9600
+serial_port = '/dev/ttyUSB0'
 
-# Create a Modbus slave context with a data block
-store = ModbusSlaveContext(
-    di=ModbusSequentialDataBlock(0, [0]*100),
-    co=ModbusSequentialDataBlock(0, [0]*100),
-    hr=ModbusSequentialDataBlock(0, [0]*100),
-    ir=ModbusSequentialDataBlock(0, [0]*100)
-)
-context = ModbusServerContext(slaves=store, single=True)
+# Create serial connection
+ser = serial.Serial(port=serial_port, baudrate=baud_rate, timeout=1)
 
-def run_server():
-    # Start the Modbus server on port 502
-    StartTcpServer(context, address=("0.0.0.0", 502))
+def read_from_slave():
+    # Example Modbus read command (read two registers starting from address 0)
+    command_to_send = bytes([slave_address, 0x03, 0x00, 0x00, 0x02])  # Modify as needed
+    ser.write(command_to_send)
 
-if __name__ == "__main__":
-    run_server()
+    # Read response
+    response = ser.read(8)  # Adjust the number of bytes to read based on your expected response length
+    return response
+
+    # Example usage
+    data = read_from_slave()
+    print(data)  # Output the received data
+    ser.close()
