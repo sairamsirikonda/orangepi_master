@@ -1,5 +1,5 @@
 import serial
-
+######
 # Try different port names (e.g., /dev/ttyS0, /dev/ttyS1, /dev/ttyAMA0)
 port_names = ["/dev/ttyS0", "/dev/ttyS1", "/dev/ttyAMA0"]
 
