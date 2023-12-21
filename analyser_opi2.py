@@ -1,7 +1,7 @@
 import serial
 
 # Configuration
-slave_address = 0x01  # Slave address
+slave_address = 40001  # Slave address
 baud_rate = 9600
 serial_port = '/dev/ttyS0'
 
@@ -14,7 +14,7 @@ def read_from_slave():
     ser.write(command_to_send)
 
     # Read response
-    response = ser.read(8)  # Adjust the number of bytes to read based on your expected response length
+    response = ser.read(32)  # Adjust the number of bytes to read based on your expected response length
     return response
 
 try:
