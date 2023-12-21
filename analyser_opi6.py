@@ -19,11 +19,14 @@ def read_float_from_modbus(address, slave):
         # Read response (adjust bytes read based on Modbus data)
         response = ser.read(7 + 1)  # 7 bytes (header) + 1 byte (byte count)
         
-        # Extracting the float value from the response (assuming it's a big-endian float)
-        byte_count = response[2]
-        value = struct.unpack('>f', response[3:3 + byte_count])[0]
+        # Print the received response for debugging
+        print(f"Received response: {response}")
         
-        return value
+        # Extracting the float value from the response (assuming it's a big-endian float)
+        if len(response) >= 4:
+            byte_count = response[2]
+            value = struct.unpack('>f', response[3:3 + byte_count])[0]
+            return value
         
     except Exception as e:
         print(f"Error: {e}")
