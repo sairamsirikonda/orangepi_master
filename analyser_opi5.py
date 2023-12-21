@@ -20,7 +20,7 @@ out = ''
 time.sleep(1)
 while ser.inWaiting() > 0:
     out += ser.read(40)
-
+    print("11111",out)
 if out != '':
     print(">>" + out)
 
