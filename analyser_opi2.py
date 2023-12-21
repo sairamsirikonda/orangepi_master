@@ -3,10 +3,10 @@ import serial
 # Configuration
 slave_address = 0x01  # Slave address
 baud_rate = 9600
-serial_port = '/dev/ttyUSB0'
+serial_port = '/dev/ttyS0'
 
-# Create serial connection
-ser = serial.Serial(port=serial_port, baudrate=baud_rate, timeout=1)
+# Create serial connection with no parity and 1 stop bit
+ser = serial.Serial(port=serial_port, baudrate=baud_rate, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
 
 def read_from_slave():
     # Example Modbus read command (read two registers starting from address 0)
