@@ -14,7 +14,7 @@ if ser.isOpen():
 ser.open()
 ser.isOpen()
 
-ser.write("%01#RDD0010000107**\r".encode())
+ser.write("%01\r".encode())
 out = ''
 # let's wait one second before reading output (let's give device time to answer)
 time.sleep(1)
