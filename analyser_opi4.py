@@ -1,3 +1,5 @@
+#!/root/orangepi_master/venv/bin/python
+
 from pymodbus.client.sync import ModbusSerialClient
 
 # Configuration
