@@ -19,7 +19,8 @@ def read_float_from_modbus(address, slave):
         # Read response (adjust bytes read based on Modbus data)
         response = ser.read(7 + 1)  # 7 bytes (header) + 1 byte (byte count)
         
-        # Print the received response for debugging
+        # Print the sent command and received response for debugging
+        print(f"Sent command: {command_to_send}")
         print(f"Received response: {response}")
         
         # Extracting the float value from the response (assuming it's a big-endian float)
