@@ -17,10 +17,11 @@ def read_float_from_modbus(address, slave):
         ser.write(command_to_send)
         
         # Read response (adjust bytes read based on Modbus data)
-        response = ser.read(7 + 4)  # 7 bytes (header) + 4 bytes (32-bit float)
+        response = ser.read(7 + 1)  # 7 bytes (header) + 1 byte (byte count)
         
         # Extracting the float value from the response (assuming it's a big-endian float)
-        value = struct.unpack('>f', response[3:])[0]
+        byte_count = response[2]
+        value = struct.unpack('>f', response[3:3 + byte_count])[0]
         
         return value
         
