@@ -13,7 +13,7 @@ serial_port ='/dev/ttyS0'
 def read_float_from_modbus(address, slave):
     try:
         ser = serial.Serial(port=serial_port, baudrate=baud_rate, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
-        command_to_send = struct.pack(>'BBBBHH', slave, 0x03, (adress - 1) >> 8, (address -1) & 0xFF, 0x00, 0x02)
+        command_to_send = struct.pack(>'BBBBHH', slave, 0x03, (address - 1) >> 8, (address -1) & 0xFF, 0x00, 0x02)
         ser.write(command_to_send)
         # Read response (adjust bytes read based on Modbus data)
         response = ser.read(7 + 1)  # 7 bytes (header) + 1 byte (byte count)
