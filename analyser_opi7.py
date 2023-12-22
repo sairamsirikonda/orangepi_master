@@ -1,5 +1,10 @@
 import struct
 import serial
+import logging
+
+# Add this at the beginning of your script
+logging.basicConfig(level=logging.DEBUG)
+
 
 slave_address = 1
 baud_rate = 9600
