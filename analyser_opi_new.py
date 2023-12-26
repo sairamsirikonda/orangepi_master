@@ -1,31 +1,21 @@
 import serial
-import RPi.GPIO as GPIO
-import time
+from pyA20.gpio import gpio
+from pyA20.gpio import port
 
 # Open the serial port
 ser = serial.Serial('/dev/ttyS0', baudrate=9600, timeout=1)
 
-<<<<<<< HEAD
-
-# Define GPIO pin numbers for DE and RE
-DE_RE_PIN = port.PG7  # Adjust based on your actual GPIO pin configuration
-
-
 # Choose a GPIO pin for both DE and RE (use appropriate pin names for Orange Pi)
 DE_RE_PIN = port.PG0  # Replace with the appropriate GPIO pin
-=======
-# Choose a GPIO pin for both DE and RE (use appropriate pin numbers for Orange Pi)
-DE_RE_PIN = 17  # Replace with the appropriate GPIO pin number
->>>>>>> a444fd32b2edfa6aed31acaa99b24d3a29aa484d
 
 # Setup GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(DE_RE_PIN, GPIO.OUT)
+gpio.init()
+gpio.setcfg(DE_RE_PIN, gpio.OUTPUT)
 
 # Function to send a Modbus request and receive the response
 def send_modbus_request(address):
     # Enable transmission (DE and RE low)
-    GPIO.output(DE_RE_PIN, GPIO.LOW)
+    gpio.output(DE_RE_PIN, gpio.LOW)
 
     # Construct the Modbus RTU request
     command = bytes([1, 3, 156, address, 0, 0, 0, 2])  # Modify as needed
@@ -40,13 +30,7 @@ def send_modbus_request(address):
     ser.flush()
 
     # Disable transmission (DE and RE high)
-<<<<<<< HEAD
     gpio.output(DE_RE_PIN, gpio.HIGH)
-
-
-=======
-    GPIO.output(DE_RE_PIN, GPIO.HIGH)
->>>>>>> a444fd32b2edfa6aed31acaa99b24d3a29aa484d
 
     # Receive the Modbus response
     response = ser.read(8)  # Adjust the number based on the expected response length
@@ -72,4 +56,4 @@ for i in range(10):
 ser.close()
 
 # Cleanup GPIO
-GPIO.cleanup()
+gpio.cleanup()
