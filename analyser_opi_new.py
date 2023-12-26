@@ -1,20 +1,18 @@
 import serial
-from pyA20.gpio import gpio
-from pyA20.gpio import port
-
-gpio.init()
-
-# List all available GPIO ports
-available_ports = [pin for pin in dir(port) if pin.startswith("PA") or pin.startswith("PG")]
-print("Available GPIO ports:", available_ports)
-
+from opi.gpio import gpio
+from opi.gpio import port
 
 # Open the serial port
 ser = serial.Serial('/dev/ttyS0', baudrate=9600, timeout=1)
 
+<<<<<<< HEAD
 # Define GPIO pin numbers for DE and RE
 DE_RE_PIN = port.PG7  # Adjust based on your actual GPIO pin configuration
 
+=======
+# Choose a GPIO pin for both DE and RE (use appropriate pin names for Orange Pi)
+DE_RE_PIN = port.PG0  # Replace with the appropriate GPIO pin
+>>>>>>> be903ae62360f6e80023b7a02b33856c6dcd686a
 
 # Setup GPIO
 gpio.init()
@@ -39,7 +37,10 @@ def send_modbus_request(address):
 
     # Disable transmission (DE and RE high)
     gpio.output(DE_RE_PIN, gpio.HIGH)
+<<<<<<< HEAD
 
+=======
+>>>>>>> be903ae62360f6e80023b7a02b33856c6dcd686a
 
     # Receive the Modbus response
     response = ser.read(8)  # Adjust the number based on the expected response length
@@ -63,3 +64,6 @@ for i in range(10):
 
 # Close the serial port
 ser.close()
+
+# Cleanup GPIO
+gpio.cleanup()
