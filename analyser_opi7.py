@@ -35,8 +35,8 @@ def read_float_from_modbus(address, slave):
         ser.close()
 
 # Read the 32-bit float value from a range of Modbus addresses
-start_address = 40001
-end_address = 40010  # Adjust to the end address of your data range
+start_address = 1
+end_address = 10  # Adjust to the end address of your data range
 
 for address in range(start_address, end_address + 1):
     data = read_float_from_modbus(address, slave_address)
