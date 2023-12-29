@@ -17,6 +17,9 @@ def send_custom_command():
         # Send the specified command
         ser.write(command_bytes)
 
+        command = bytes.fromhex('01 F2 01 10 xx AA xx xx xx xx xx 7D 7D')
+        ser.write(command)
+
         # Wait for a short time to allow the sensor to respond
         time.sleep(0.1)
 
