@@ -2,7 +2,7 @@ import serial
 import time
 
 # Define the serial port parameters
-serial_port = '/dev/ttyS0'  # Update this with the correct serial port for your Orange Pi
+serial_port = '/dev/ttyS1'  # Update this with the correct serial port for your Orange Pi
 baud_rate = 9600
 
 # Create a serial object
