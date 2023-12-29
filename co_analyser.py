@@ -10,20 +10,11 @@ ser = serial.Serial(serial_port, baud_rate, timeout=1)
 
 def send_custom_command():
     try:
-        # Replace 'xx' with actual values for your command
-        command_hex = '01F20110xxxxxxxx7D7D'
-        
-        # Ensure the length is even
-        if len(command_hex) % 2 != 0:
-            raise ValueError("Hexadecimal string must have an even number of digits")
-
+        # Send the specified command
+        command_hex = 'F22B550000B1F67D7D7D7B0110'
         command_bytes = bytes.fromhex(command_hex)
 
-        # Send the specified command
         ser.write(command_bytes)
-
-        command = bytes.fromhex('01 F2 01 10 xx AA xx xx xx xx xx 7D 7D')
-        ser.write(command)
 
         # Wait for a short time to allow the sensor to respond
         time.sleep(0.1)
