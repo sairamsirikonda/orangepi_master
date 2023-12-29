@@ -10,8 +10,9 @@ ser = serial.Serial(serial_port, baud_rate, timeout=1)
 
 def read_co_data():
     try:
-        # Send a command to request CO data (replace 'YOUR_COMMAND' with the actual command)
-        ser.write(b'YOUR_COMMAND\r\n')
+        # Send the command to request CO data
+        command = bytes.fromhex('7D7B011001F2')
+        ser.write(command)
 
         # Wait for a short time to allow the sensor to respond
         time.sleep(0.1)
