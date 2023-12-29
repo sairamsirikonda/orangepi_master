@@ -12,6 +12,11 @@ def send_custom_command():
     try:
         # Replace 'xx' with actual values for your command
         command_hex = '01F20110xxxxxxxx7D7D'
+        
+        # Ensure the length is even
+        if len(command_hex) % 2 != 0:
+            raise ValueError("Hexadecimal string must have an even number of digits")
+
         command_bytes = bytes.fromhex(command_hex)
 
         # Send the specified command
