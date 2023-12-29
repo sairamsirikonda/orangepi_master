@@ -2,7 +2,7 @@ import serial
 import time
 
 # Define the serial port parameters
-serial_port = '/dev/ttyS0'  # Update this with the correct serial port for your Orange Pi
+serial_port = '/dev/ttyS1'  # Update this with the correct serial port for your Orange Pi
 baud_rate = 9600
 
 # Create a serial object
@@ -10,9 +10,12 @@ ser = serial.Serial(serial_port, baud_rate, timeout=1)
 
 def send_custom_command():
     try:
+        # Replace 'xx' with actual values for your command
+        command_hex = '01F20110xxxxxxxx7D7D'
+        command_bytes = bytes.fromhex(command_hex)
+
         # Send the specified command
-        command = bytes.fromhex('F22B550000B1F67D7D7D7B011001')
-        ser.write(command)
+        ser.write(command_bytes)
 
         # Wait for a short time to allow the sensor to respond
         time.sleep(0.1)
