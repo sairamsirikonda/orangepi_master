@@ -1,0 +1,45 @@
+import time
+import serial
+import struct
+import OPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(7, GPIO.OUT, initial=GPIO.HIGH)  # Set DE/RE pin high to enable transmission
+
+receive = serial.Serial(
+    port='/dev/ttyS1',  # Adjust the serial port as per your Orange Pi setup
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+    timeout=1
+)
+
+THRESHOLD = 100  # Replace with your desired threshold for gas concentration
+
+while True:
+    if receive.in_waiting > 0:
+        # Read a chunk of bytes from the gas analyzer (assuming the response size is known)
+        data = receive.read(40)  # Adjust the number based on the actual response size
+
+        # Unpack the received data based on the provided protocol
+        process_value, monitor_status, active_alarm, active_relay, error_status, gas_peak_reading, \
+        sensor_type, gas_sensor, gas_unit, set_alarm1, set_alarm2, cal_date, cal_due_date, \
+        temperature_pv, rtc_hour, rtc_min, rtc_sec, rtc_date, rtc_month, rtc_year, cal_interval, \
+        temperature_unit, current_high_range, current_low_range, time_format = struct.unpack('>fHHHHfHHHffIIffHHHHHH', data)
+
+        print("Process Value:", process_value)
+        print("Monitor Status:", monitor_status)
+        print("Active Alarm:", active_alarm)
+        print("Active Relay:", active_relay)
+        print("Error Status:", error_status)
+        print("Gas Peak Reading:", gas_peak_reading)
+        # Add more print statements for other parameters if needed
+
+        # Your logic to handle the gas value goes here
+        # Example: If gas_peak_reading > THRESHOLD, take appropriate action
+        if gas_peak_reading > THRESHOLD:
+            print("Gas concentration exceeds threshold. Take appropriate action.")
+
+        time.sleep(1.5)  # Adjust the delay as needed
