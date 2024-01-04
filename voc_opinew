@@ -16,18 +16,13 @@ receive = serial.Serial(
     timeout=1
 )
 
-THRESHOLD = 100  # Replace with your desired threshold for gas concentration
-
 while True:
     if receive.in_waiting > 0:
-        # Read a chunk of bytes from the gas analyzer (assuming the response size is known)
-        data = receive.read(40)  # Adjust the number based on the actual response size
+        # Read 58 bytes from the gas analyzer
+        data = receive.read(58)
 
         # Unpack the received data based on the provided protocol
-        process_value, monitor_status, active_alarm, active_relay, error_status, gas_peak_reading, \
-        sensor_type, gas_sensor, gas_unit, set_alarm1, set_alarm2, cal_date, cal_due_date, \
-        temperature_pv, rtc_hour, rtc_min, rtc_sec, rtc_date, rtc_month, rtc_year, cal_interval, \
-        temperature_unit, current_high_range, current_low_range, time_format = struct.unpack('>fHHHHfHHHffIIffHHHHHH', data)
+        process_value, monitor_status, active_alarm, active_relay, error_status, gas_peak_reading = struct.unpack('>fHHHHf', data)
 
         print("Process Value:", process_value)
         print("Monitor Status:", monitor_status)
@@ -35,7 +30,6 @@ while True:
         print("Active Relay:", active_relay)
         print("Error Status:", error_status)
         print("Gas Peak Reading:", gas_peak_reading)
-        # Add more print statements for other parameters if needed
 
         # Your logic to handle the gas value goes here
         # Example: If gas_peak_reading > THRESHOLD, take appropriate action
