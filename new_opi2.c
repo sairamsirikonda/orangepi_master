@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <modbus/modbus.h>
+#include <errno.h>  // Add this line to include the errno header
 
-#define RS485_DEVICE "/dev/ttyS1"  // Adjust the serial device based on your Orange Pi configuration
-#define BAUD_RATE 9600             // Adjust the baud rate based on your gas analyzer's specifications
-#define SLAVE_ID 1                 // Adjust the Modbus slave ID based on your gas analyzer's configuration
-#define STARTING_ADDRESS 40001     // Starting address for reading data
-#define QUANTITY_OF_REGISTERS 2    // Number of registers to read (assuming a float is 2 registers)
+#define RS485_DEVICE "/dev/ttyS1"
+#define BAUD_RATE 9600
+#define SLAVE_ID 1
+#define STARTING_ADDRESS 40001
+#define QUANTITY_OF_REGISTERS 2
 
 int main() {
     modbus_t *ctx;
@@ -35,7 +36,6 @@ int main() {
         return 1;
     }
 
-    // Assuming raw_data contains two 16-bit values that represent a float
     value = *((float*)raw_data);
 
     printf("Received float value: %f\n", value);
