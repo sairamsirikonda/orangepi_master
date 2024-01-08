@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEVICE_PATH "/dev/ttyS1"  // Adjust the device path based on your Orange Pi model
-
 int main() {
     int serial_port;
     char buffer[10];
@@ -14,7 +12,7 @@ int main() {
         return 1;
     }
 
-    serial_port = serialOpen(DEVICE_PATH, 9600);  // Adjust baud rate as needed
+    serial_port = serialOpen("/dev/ttyS1", 9600);  // Adjust the device path and baud rate as needed
     if (serial_port == -1) {
         fprintf(stderr, "Unable to open serial device\n");
         return 1;
@@ -46,4 +44,3 @@ int main() {
 
     return 0;
 }
- 
