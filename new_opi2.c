@@ -7,7 +7,7 @@
 #define BAUD_RATE 9600
 #define SLAVE_ID 1
 #define STARTING_ADDRESS 40001
-#define QUANTITY_OF_REGISTERS 2
+#define QUANTITY_OF_REGISTERS 4
 
 int main() {
     modbus_t *ctx;
