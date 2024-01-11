@@ -7,14 +7,14 @@
 #define BAUD_RATE 9600
 #define SLAVE_ID 1
 #define STARTING_ADDRESS 40001
-#define QUANTITY_OF_REGISTERS 4
+#define QUANTITY_OF_REGISTERS 2
 
 int main() {
     modbus_t *ctx;
     float value;
 
-    // Initialize Modbus context
-    ctx = modbus_new_rtu(RS485_DEVICE, BAUD_RATE, 'N', 8, 1);
+    // Initialize Modbus context with ASCII mode
+    ctx = modbus_new_rtu(RS485_DEVICE, BAUD_RATE, 'O', 7, 1);  // 'O' for ASCII, 7 data bits, 1 stop bit
     if (ctx == NULL) {
         fprintf(stderr, "Unable to create Modbus context: %s\n", modbus_strerror(errno));
         return 1;
