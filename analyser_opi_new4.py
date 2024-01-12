@@ -1,4 +1,5 @@
 import serial
+import struct
 from pyA20.gpio import gpio
 from pyA20.gpio import port
 
@@ -53,12 +54,14 @@ try:
         if response:
             if register == 40001:
                 # Process value (float32_t)
-                value = int.from_bytes(response[3:7], byteorder='big', signed=False)
-                print(f"Process Value at register {register}: {value}")
+                process_value_bytes = response[3:7]
+                process_value = struct.unpack('>f', process_value_bytes)[0]
+                print(f"Process Value at register {register}: {process_value}")
             elif register == 40003:
                 # Monitor status (uint16_t)
-                value = int.from_bytes(response[3:5], byteorder='big', signed=False)
-                print(f"Monitor Status at register {register}: {value}")
+                monitor_status_bytes = response[3:5]
+                monitor_status = int.from_bytes(monitor_status_bytes, byteorder='big', signed=False)
+                print(f"Monitor Status at register {register}: {monitor_status}")
             else:
                 # Handle other cases if needed
                 print(f"Value at register {register}: Unsupported parameter")
