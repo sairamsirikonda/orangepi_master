@@ -37,7 +37,8 @@ def send_modbus_request(register):
     gpio.output(DE_RE_PIN, gpio.HIGH)
 
     # Receive the Modbus response
-    response = ser.read(8)  # Adjust the number based on the expected response length
+    expected_response_length = 5 + 2  # Address (1 byte) + Function code (1 byte) + Byte count (1 byte) + Data (2 bytes)
+    response = ser.read(expected_response_length)  # Adjust the number based on the expected response length
 
     # Print the Modbus response received
     print("Received response:", response)
@@ -51,7 +52,7 @@ try:
         response = send_modbus_request(register)
 
         # Process the response
-        if response:
+        if response and len(response) >= 7:  # Check if the response is of sufficient length
             if register == 40001:
                 # Process value (float32_t)
                 process_value_bytes = response[3:7]
@@ -67,7 +68,7 @@ try:
                 print(f"Value at register {register}: Unsupported parameter")
 
         else:
-            print(f"No response received for register {register}")
+            print(f"No or invalid response received for register {register}")
 
 except Exception as e:
     print(f"Error: {e}")
