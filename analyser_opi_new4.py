@@ -46,29 +46,28 @@ def send_modbus_request(register):
     return response
 
 # Example usage
+# Example usage
 try:
     registers = [40001, 40003, 40005]
     for register in registers:
         response = send_modbus_request(register)
 
         # Process the response
-        if response and len(response) >= 7:  # Check if the response is of sufficient length
+        if response:
             if register == 40001:
                 # Process value (float32_t)
-                process_value_bytes = response[3:7]
-                process_value = struct.unpack('>f', process_value_bytes)[0]
-                print(f"Process Value at register {register}: {process_value}")
+                value = int.from_bytes(response[3:7], byteorder='big', signed=False)
+                print(f"Process Value at register {register}: {value}")
             elif register == 40003:
                 # Monitor status (uint16_t)
-                monitor_status_bytes = response[3:5]
-                monitor_status = int.from_bytes(monitor_status_bytes, byteorder='big', signed=False)
-                print(f"Monitor Status at register {register}: {monitor_status}")
+                value = int.from_bytes(response[3:5], byteorder='big', signed=False)
+                print(f"Monitor Status at register {register}: {value}")
             else:
                 # Handle other cases if needed
                 print(f"Value at register {register}: Unsupported parameter")
 
         else:
-            print(f"No or invalid response received for register {register}")
+            print(f"No response received for register {register}")
 
 except Exception as e:
     print(f"Error: {e}")
@@ -76,3 +75,4 @@ except Exception as e:
 finally:
     # Close the serial port
     ser.close()
+
