@@ -7,91 +7,91 @@
 #include <string.h>
 
 // Define the GPIO pin
-#define DE_RE_PIN "/sys/class/gpio/gpio7/value"  // Replace with the appropriate GPIO pin
+#define DE_RE_PIN "/sys/class/gpio/gpio7/value"  // Modify for GPIO pin 7
 
-// Function to send a Modbus request and receive the response
-void send_modbus_request(int fd, uint16_t register_number);
-
-int main() {
-    // Open the serial port
-    int serial_fd = open("/dev/ttyS1", O_RDWR | O_NOCTTY);
-    if (serial_fd == -1) {
+// Open the serial port
+int open_serial_port(const char *port_name) {
+    int port = open(port_name, O_RDWR | O_NOCTTY | O_NDELAY);
+    if (port == -1) {
         perror("Error opening serial port");
         exit(EXIT_FAILURE);
     }
+    return port;
+}
 
-    // Set up the GPIO pin
-    int gpio_fd = open(DE_RE_PIN, O_WRONLY);
-    if (gpio_fd == -1) {
-        perror("Error opening GPIO pin");
-        close(serial_fd);
-        exit(EXIT_FAILURE);
-    }
+// Set serial port parameters
+void set_serial_params(int port) {
+    struct termios serial_params;
+    tcgetattr(port, &serial_params);
 
-    // Example usage
-    uint16_t registers[] = {40001, 40003, 40005};
-    size_t num_registers = sizeof(registers) / sizeof(registers[0]);
+    // Set baudrate (modify as needed)
+    cfsetispeed(&serial_params, B9600);
+    cfsetospeed(&serial_params, B9600);
 
-    for (size_t i = 0; i < num_registers; ++i) {
-        send_modbus_request(serial_fd, registers[i]);
-    }
+    // 8N1 (8 data bits, no parity, 1 stop bit)
+    serial_params.c_cflag &= ~PARENB;
+    serial_params.c_cflag &= ~CSTOPB;
+    serial_params.c_cflag &= ~CSIZE;
+    serial_params.c_cflag |= CS8;
 
-    // Close file descriptors
-    close(gpio_fd);
-    close(serial_fd);
-
-    return 0;
+    tcsetattr(port, TCSANOW, &serial_params);
 }
 
 // Function to send a Modbus request and receive the response
-void send_modbus_request(int fd, uint16_t register_number) {
-    // Enable transmission (set GPIO pin low)
-    write(fd, "0", 1);
-
-    // Convert register to Modbus address
-    uint16_t modbus_address = register_number - 1;
+void send_modbus_request(int port, uint16_t register_address) {
+    // Enable transmission (DE and RE low)
+    int de_re_fd = open(DE_RE_PIN, O_WRONLY);
+    write(de_re_fd, "0", 1);
+    close(de_re_fd);
 
     // Construct the Modbus RTU request
-    uint8_t command[] = {1, 3, (modbus_address >> 8) & 0xFF, modbus_address & 0xFF, 0, 2};  // Modify as needed
+    uint8_t command[] = {0x01, 0x03, (uint8_t)((register_address >> 8) & 0xFF), (uint8_t)(register_address & 0xFF), 0x00, 0x02};
 
-    // Print the Modbus request being sent (for debugging)
+    // Print the Modbus request being sent
     printf("Sent command:");
-    for (size_t i = 0; i < sizeof(command) / sizeof(command[0]); ++i) {
+    for (int i = 0; i < sizeof(command) / sizeof(command[0]); i++) {
         printf(" 0x%02X", command[i]);
     }
     printf("\n");
 
     // Send the Modbus request
-    write(fd, command, sizeof(command));
+    write(port, command, sizeof(command));
 
     // Wait for transmission to complete
-    usleep(100000);  // 100 ms (adjust as needed)
+    tcdrain(port);
 
-    // Disable transmission (set GPIO pin high)
-    write(fd, "1", 1);
+    // Disable transmission (DE and RE high)
+    de_re_fd = open(DE_RE_PIN, O_WRONLY);
+    write(de_re_fd, "1", 1);
+    close(de_re_fd);
 
     // Receive the Modbus response
     uint8_t response[8];
-    ssize_t num_bytes = read(fd, response, sizeof(response));
+    read(port, response, sizeof(response));
 
-    // Print the Modbus response received (for debugging)
+    // Print the Modbus response received
     printf("Received response:");
-    for (ssize_t i = 0; i < num_bytes; ++i) {
+    for (int i = 0; i < sizeof(response) / sizeof(response[0]); i++) {
         printf(" 0x%02X", response[i]);
     }
     printf("\n");
+}
 
-    // Process the response
-    if (num_bytes > 0) {
-        // Extract raw value from Modbus response
-        uint32_t raw_value = (response[3] << 24) | (response[4] << 16) | (response[5] << 8) | response[6];
+int main() {
+    // Open the serial port
+    int serial_port = open_serial_port("/dev/ttyS0");
 
-        // Assuming a scaling factor of 0.1 (adjust based on device documentation)
-        double scaling_factor = 0.1;
-        double gas_concentration_ppm = raw_value * scaling_factor;
+    // Set serial port parameters
+    set_serial_params(serial_port);
 
-        printf("Gas Concentration at register %d: %f PPM\n", register_number, gas_concentration_ppm);
-    } else {
-        printf("No response received for register %d\n", register_number);
+    // Example usage
+    uint16_t registers[] = {40001, 40003, 40005};
+    for (int i = 0; i < sizeof(registers) / sizeof(registers[0]); i++) {
+        send_modbus_request(serial_port, registers[i]);
     }
+
+    // Close the serial port
+    close(serial_port);
+
+    return 0;
 }
