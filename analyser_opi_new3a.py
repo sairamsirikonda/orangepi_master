@@ -3,10 +3,10 @@ from pyA20.gpio import gpio
 from pyA20.gpio import port
 
 # Open the serial port
-ser = serial.Serial('/dev/ttyS0', baudrate=9600, timeout=1)
+ser = serial.Serial('/dev/ttyS1', baudrate=9600, timeout=1)
 
 # Choose a GPIO pin for both DE and RE (use appropriate pin names for Orange Pi)
-DE_RE_PIN = port.PG0  # Replace with the appropriate GPIO pin
+DE_RE_PIN = port.PA7  # Replace with the appropriate GPIO pin
 
 # Setup GPIO
 gpio.init()
