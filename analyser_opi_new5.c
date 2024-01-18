@@ -7,7 +7,7 @@
 #include <string.h>
 
 // Define the GPIO pin
-#define DE_RE_PIN "GPIO7"  // Replace with the appropriate GPIO pin
+#define DE_RE_PIN "/sys/class/gpio/gpio7/value"  // Replace with the appropriate GPIO pin
 
 // Function to send a Modbus request and receive the response
 void send_modbus_request(int fd, uint16_t register_number);
