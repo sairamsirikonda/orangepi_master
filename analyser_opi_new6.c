@@ -1,22 +1,36 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <string.h>
+#include <stdint.h>
 
-#define DE_RE_PIN "/sys/class/gpio/gpio7/value"  // Modify for GPIO pin 7
+// Function prototypes
+void send_modbus_request(int serial_port, uint16_t register_address);
+void process_modbus_response(uint16_t register_address, uint8_t *response);
+void process_process_value(uint8_t *response);
+void process_monitor_status(uint8_t *response);
+void process_active_alarm(uint8_t *response);
+void process_active_relay(uint8_t *response);
+void process_error_status(uint8_t *response);
 
-// Open the serial port
-int open_serial_port(const char *port_name) {
-    int port = open(port_name, O_RDWR | O_NOCTTY | O_NDELAY);
-    if (port == -1) {
-        perror("Error opening serial port");
-        exit(EXIT_FAILURE);
+int main() {
+    // Open the serial port (replace "/dev/ttyS0" with your actual serial port)
+    int serial_port = open_serial_port("/dev/ttyS0", 9600, 1);
+
+    // Example usage
+    uint16_t registers[] = {40001, 40003, 40004, 40005, 40006};
+    size_t num_registers = sizeof(registers) / sizeof(registers[0]);
+
+    for (size_t i = 0; i < num_registers; i++) {
+        send_modbus_request(serial_port, registers[i]);
     }
-    return port;
+
+    // Close the serial port
+    close(serial_port);
+
+    return 0;
 }
+
+// Other functions remain the same...
+
 
 // Set serial port parameters
 void set_serial_params(int port) {
