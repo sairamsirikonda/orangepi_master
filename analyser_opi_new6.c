@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
 
-// Function prototypes
+#define DE_RE_PIN "/sys/class/gpio/gpio7/value"
+#define B9600     9600
+#define TCSANOW   0
+
 void send_modbus_request(int serial_port, uint16_t register_address);
 void process_modbus_response(uint16_t register_address, uint8_t *response);
 void process_process_value(uint8_t *response);
@@ -12,110 +18,58 @@ void process_active_relay(uint8_t *response);
 void process_error_status(uint8_t *response);
 
 int main() {
-    // Open the serial port (replace "/dev/ttyS0" with your actual serial port)
-    int serial_port = open_serial_port("/dev/ttyS0", 9600, 1);
-
-    // Example usage
-    uint16_t registers[] = {40001, 40003, 40004, 40005, 40006};
-    size_t num_registers = sizeof(registers) / sizeof(registers[0]);
-
-    for (size_t i = 0; i < num_registers; i++) {
-        send_modbus_request(serial_port, registers[i]);
+    int serial_port = open("/dev/ttyS1", O_RDWR);
+    if (serial_port == -1) {
+        perror("Error opening serial port");
+        return 1;
     }
 
-    // Close the serial port
-    close(serial_port);
+    struct termios serial_params;
+    if (set_serial_params(serial_port, B9600, &serial_params) != 0) {
+        return 1;
+    }
 
+    int de_re_fd = open(DE_RE_PIN, O_WRONLY);
+    if (de_re_fd == -1) {
+        perror("Error opening GPIO pin");
+        close(serial_port);
+        return 1;
+    }
+
+    uint16_t registers[] = {40001, 40003, 40005};
+    size_t num_registers = sizeof(registers) / sizeof(registers[0]);
+
+    for (size_t i = 0; i < num_registers; ++i) {
+        send_modbus_request(serial_port, registers[i]);
+        // Add any additional processing logic if needed
+    }
+
+    close(de_re_fd);
+    close(serial_port);
     return 0;
 }
 
-// Other functions remain the same...
-
-
-// Set serial port parameters
-void set_serial_params(int port) {
-    struct termios serial_params;
-    tcgetattr(port, &serial_params);
-
-    // Set baudrate (modify as needed)
-    cfsetispeed(&serial_params, B9600);
-    cfsetospeed(&serial_params, B9600);
-
-    // 8N1 (8 data bits, no parity, 1 stop bit)
-    serial_params.c_cflag &= ~PARENB;
-    serial_params.c_cflag &= ~CSTOPB;
-    serial_params.c_cflag &= ~CSIZE;
-    serial_params.c_cflag |= CS8;
-
-    tcsetattr(port, TCSANOW, &serial_params);
-}
-
-// Function to send a Modbus request and receive the response
-void send_modbus_request(int port, uint16_t register_address) {
-    // Enable transmission (DE and RE low)
-    int de_re_fd = open(DE_RE_PIN, O_WRONLY);
-    write(de_re_fd, "0", 1);
-    close(de_re_fd);
-
-    // Construct the Modbus RTU request
-    uint8_t command[] = {0x01, 0x03, (uint8_t)((register_address >> 8) & 0xFF), (uint8_t)(register_address & 0xFF), 0x00, 0x02};
-
-    // Print the Modbus request being sent
-    printf("Sent command:");
-    for (int i = 0; i < sizeof(command) / sizeof(command[0]); i++) {
-        printf(" 0x%02X", command[i]);
+int set_serial_params(int port, speed_t baudrate, struct termios *params) {
+    if (tcgetattr(port, params) != 0) {
+        perror("Error getting serial port attributes");
+        return 1;
     }
-    printf("\n");
 
-    // Send the Modbus request
-    write(port, command, sizeof(command));
+    cfsetispeed(params, baudrate);
+    cfsetospeed(params, baudrate);
 
-    // Wait for transmission to complete
-    tcdrain(port);
+    params->c_cflag &= ~PARENB;
+    params->c_cflag &= ~CSTOPB;
+    params->c_cflag &= ~CSIZE;
+    params->c_cflag |= CS8;
 
-    // Disable transmission (DE and RE high)
-    de_re_fd = open(DE_RE_PIN, O_WRONLY);
-    write(de_re_fd, "1", 1);
-    close(de_re_fd);
-
-    // Receive the Modbus response
-    uint8_t response[8];
-    read(port, response, sizeof(response));
-
-    // Print the Modbus response received
-    printf("Received response:");
-    for (int i = 0; i < sizeof(response) / sizeof(response[0]); i++) {
-        printf(" 0x%02X", response[i]);
+    if (tcsetattr(port, TCSANOW, params) != 0) {
+        perror("Error setting serial port attributes");
+        return 1;
     }
-    printf("\n");
 
-    // Process the response based on the register address
-    process_modbus_response(register_address, response);
+    return 0;
 }
-
-// Function to process Modbus response based on register address
-void process_modbus_response(uint16_t register_address, uint8_t *response) {
-    switch (register_address) {
-        case 40001:
-            process_process_value(response);
-            break;
-        case 40003:
-            process_monitor_status(response);
-            break;
-        case 40004:
-            process_active_alarm(response);
-            break;
-        case 40005:
-            process_active_relay(response);
-            break;
-        case 40006:
-            process_error_status(response);
-            break;
-        default:
-            printf("Unhandled register address: %d\n", register_address);
-    }
-}
-
 // Functions to process specific Modbus responses
 void process_process_value(uint8_t *response) {
     // Assuming a float32_t value at registers 40001 and 40002
