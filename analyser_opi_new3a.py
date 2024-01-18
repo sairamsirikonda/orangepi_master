@@ -49,10 +49,16 @@ try:
     for register in registers:
         response = send_modbus_request(register)
 
-        # Process the response (your existing logic)
+        # Process the response
         if response:
-            value = int.from_bytes(response[3:7], byteorder='big', signed=False)
-            print(f"Process Value at register {register}: {value}")
+            # Extract raw value from Modbus response
+            raw_value = int.from_bytes(response[3:7], byteorder='big', signed=False)
+
+            # Assuming a scaling factor of 0.1 (adjust based on device documentation)
+            scaling_factor = 0.1
+            gas_concentration_ppm = raw_value * scaling_factor
+
+            print(f"Gas Concentration at register {register}: {gas_concentration_ppm} PPM")
         else:
             print(f"No response received for register {register}")
 
