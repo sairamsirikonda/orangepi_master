@@ -1,5 +1,4 @@
 import minimalmodbus
-import time
 
 # Define your Modbus device parameters
 RS485_DEVICE = '/dev/ttyS1'
