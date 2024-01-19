@@ -33,3 +33,4 @@ if __name__ == "__main__":
 
     # Close the serial connection
     instrument.serial.close()
+
