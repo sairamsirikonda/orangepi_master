@@ -22,6 +22,7 @@ def read_gas_concentration(instrument, register_address):
 
 if __name__ == "__main__":
     # Initialize Modbus instrument
+    ###
     instrument = minimalmodbus.Instrument(RS485_DEVICE, SLAVE_ID)
     instrument.serial.baudrate = BAUD_RATE
 
