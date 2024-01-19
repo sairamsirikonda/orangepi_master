@@ -1,5 +1,5 @@
 import minimalmodbus
-
+###
 # Define your Modbus device parameters
 RS485_DEVICE = '/dev/ttyS1'
 BAUD_RATE = 9600
