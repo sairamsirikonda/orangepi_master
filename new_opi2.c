@@ -13,7 +13,7 @@ int main() {
     modbus_t *ctx;
     float value;
 
-    // Initialize Modbus context with ASCII mode
+    // Initialize Modbus context with RTU mode
     ctx = modbus_new_rtu(RS485_DEVICE, BAUD_RATE, 'O', 7, 1);  // 'O' for ASCII, 7 data bits, 1 stop bit
     if (ctx == NULL) {
         fprintf(stderr, "Unable to create Modbus context: %s\n", modbus_strerror(errno));
