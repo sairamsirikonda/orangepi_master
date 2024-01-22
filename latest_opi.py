@@ -3,11 +3,11 @@ import minimalmodbus
 import time  # Added for potential delays or timing requirements
 
 # Configure serial port settings (adjust as needed)
-ser = serial.Serial('/dev/ttyS0', baudrate=9600, parity='N', stopbits=1, bytesize=8)
+ser = serial.Serial('/dev/ttyS1', baudrate=9600, parity='N', stopbits=1, bytesize=8)
 
 # Create MODBUS client object (if applicable)
 if gas_analyzer_uses_modbus:
-    mb = minimalmodbus.Instrument(ser.port, 1)  # Replace '1' with gas analyzer's MODBUS address
+    mb = minimalmodbus.Instrument(ser.port, 001)  # Replace '1' with gas analyzer's MODBUS address
     mb.mode = minimalmodbus.MODE_RTU
 
 # Main loop to continuously read data
