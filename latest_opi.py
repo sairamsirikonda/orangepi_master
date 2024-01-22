@@ -2,6 +2,10 @@ import serial
 import minimalmodbus
 import time  # Added for potential delays or timing requirements
 
+# Define whether the gas analyzer uses MODBUS
+gas_analyzer_uses_modbus = True  # True or False
+
+
 # Configure serial port settings (adjust as needed)
 ser = serial.Serial('/dev/ttyS1', baudrate=9600, parity='N', stopbits=1, bytesize=8)
 
