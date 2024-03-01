@@ -3,7 +3,7 @@ import serial
 import time
 
 # Configure GPIO pins for DE and RE
-DE_RE_PIN = 18  # GPIO pin number for DE and RE
+DE_RE_PIN = 7  # GPIO pin number for DE and RE
 
 # Configure serial port
 ser = serial.Serial(
@@ -15,7 +15,7 @@ ser = serial.Serial(
 )
 
 # Setup GPIO
-GPIO.setboard(GPIO.PCPCPLUS)  # Set board type for Orange Pi PC Plus
+#GPIO.setboard(GPIO.PCPCPLUS)  # Set board type for Orange Pi PC Plus
 GPIO.setmode(GPIO.BOARD)  # Use board pin numbering
 GPIO.setup(DE_RE_PIN, GPIO.OUT)
 
