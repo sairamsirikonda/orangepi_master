@@ -1,6 +1,4 @@
-import serial
-from pymodbus.client.rs485 import ModbusRTUClient
-from pymodbus.converters import ModbusConverters
+import minimalmodbus
 
 # Replace with your specific values
 PORT = '/dev/ttyS0'  # Replace with the actual serial port device file
@@ -8,27 +6,26 @@ SLAVE_ADDRESS = 1  # Replace with the slave address of your gas analyzer
 REGISTER_ADDRESS = 40001  # Starting register address
 NUMBER_OF_REGISTERS = 5  # Number of registers to read
 
-# Configure serial port
-ser = serial.Serial(PORT, baudrate=9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE)
-
-# Create Modbus client
-client = ModbusRTUClient(ser)
+# Configure the minimalmodbus instrument
+instrument = minimalmodbus.Instrument(PORT, SLAVE_ADDRESS)
+instrument.serial.baudrate = 9600
+instrument.serial.bytesize = 8
+instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
+instrument.serial.stopbits = 1
+instrument.serial.timeout = 0.5  # Timeout for read operations
 
 try:
     # Read data from registers
-    result = client.read_holding_registers(REGISTER_ADDRESS, NUMBER_OF_REGISTERS)
+    registers = instrument.read_registers(REGISTER_ADDRESS, NUMBER_OF_REGISTERS)
 
-    if result.is_exception():
-        print("Error reading registers:", result)
-    else:
-        # Convert read data to float values
-        float_values = ModbusConverters.decode_ieee_float(result.registers)
+    # Process the register values (replace with your specific logic)
+    for i, value in enumerate(registers):
+        print(f"Register value {i+1}: {value}")  # Print the raw register values
 
-        # Process the float values (replace with your specific logic)
-        for i in range(NUMBER_OF_REGISTERS):
-            print(f"Register value {i+1}: {float_values[i]:.2f}")  # Format to 2 decimal places
+except Exception as e:
+    print("Error:", e)
 
 finally:
-    # Close serial port
-    ser.close()
+    # Clean up resources
+    instrument.serial.close()
     print("Serial port closed.")
