@@ -15,12 +15,12 @@ instrument.serial.stopbits = 1
 instrument.serial.timeout = 0.5  # Timeout for read operations
 
 # Addresses to read from
-register_addresses = list(range(40001, 40021))
+register_addresses = list(range(40001, 40003))
 
 try:
     # Read data from each register address
     for address in register_addresses:
-        value = instrument.read_register(address, functioncode=3)
+        value = instrument.read_register(address, functioncode=4)
         print(f"Value at address {address}: {value}")
 
 except Exception as e:
