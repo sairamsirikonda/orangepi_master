@@ -1,21 +1,29 @@
-from pymodbus.client.sync import ModbusSerialClient
+import serial
 import time
 
 # Define the serial port and baudrate
-client = ModbusSerialClient(method='rtu', port='/dev/ttyS1', baudrate=9600)
-# Change '/dev/ttyUSB0' to your actual serial port
+ser = serial.Serial('/dev/ttyUSB0', 9600)  # Change '/dev/ttyUSB0' to your actual serial port
 
-# Function to read data from slave
-def read_from_slave(unit, address, count):
-    try:
-        if client.connect():
-            # Read holding registers
-            response = client.read_holding_registers(address, count, unit=unit)
-            client.close()
-            return response.registers
-        else:
-            print("Failed to connect to Modbus device.")
-            return None
-    except ModbusIOException as e:
-        print(f"Modbus communication error: {e}")
-        return None
+# Function to send packet and read response
+def read_from_slave(packet):
+    ser.write(packet)  # Send the packet
+    time.sleep(0.1)  # Adjust delay if needed
+    response = ser.read_all()  # Read response
+    return response
+
+# Main loop
+while True:
+    # Define the packet to send
+    packet = bytes.fromhex('01 04 9C 41 00 28 8E 50')
+
+    # Read data from slave
+    response = read_from_slave(packet)
+    
+    # Print the response
+    print("Response:", response)
+    
+    # Adjust loop delay if needed
+    time.sleep(1)
+
+# Close the serial connection
+ser.close()
