@@ -13,6 +13,8 @@ instrument.serial.bytesize = 8
 instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
 instrument.serial.stopbits = 1
 instrument.serial.timeout = 0.5  # Timeout for read operations
+instrument.mode = minimalmodbus.MODE_RTU
+
 
 # Addresses to read from
 register_addresses = list(range(40001, 40003))
