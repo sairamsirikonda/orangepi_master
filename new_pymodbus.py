@@ -14,14 +14,19 @@ slave_id = 1
 register_addresses = [40001, 40002, 40003, 40004, 40005]
 
 # Function to read holding registers from the Modbus slave
+# Modify the function to handle Modbus communication errors
 def read_holding_registers(client, slave_id, address, count):
-    response = client.read_holding_registers(address, count, unit=slave_id)
-    if response.isError():
-        print("Error reading registers:", response)
+    try:
+        response = client.read_holding_registers(address, count, unit=slave_id)
+        if response.isError():
+            print(f"Error reading registers at address {address}: {response}")
+            return None
+        else:
+            decoder = BinaryPayloadDecoder.fromRegisters(response.registers, Endian.Big)
+            return decoder.decode_32bit_float()  # Assuming the registers contain 32-bit floating-point values
+    except Exception as e:
+        print(f"An error occurred while reading registers at address {address}: {e}")
         return None
-    else:
-        decoder = BinaryPayloadDecoder.fromRegisters(response.registers, Endian.Big)
-        return decoder.decode_32bit_float()  # Assuming the registers contain 32-bit floating-point values
 
 # Create Modbus serial client
 client = ModbusSerialClient(method='rtu', port=port, baudrate=baudrate, parity=parity,
