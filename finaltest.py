@@ -1,17 +1,17 @@
 from pymodbus.client.serial import ModbusSerialClient
-SLAVE_ID                = 1
+SLAVE_ID    = 1
 REGISTER    =  1
 COUNT       =  2
 DATA_TYPE   =  3
 register_list = [
-("process value",       40001, 2, float),
-("gas peak reading",    40007, 2, float),
-("rtc hour",    40001,  1,  int),
-("rtc min",     40001,  1,  int),
-("rtc sec",     40001,  1,  int),
-("rtc date",    40001,  1,  int),
-("rtc month",   40001,  1,  int),
-("rtc year",    40001,  1,  int),
+("Cumulative flow",  1, 2, int),
+#("gas peak reading",    40007, 2, float),
+#("rtc hour",    40001,  1,  int),
+#("rtc min",     40001,  1,  int),
+#("rtc sec",     40001,  1,  int),
+#("rtc date",    40001,  1,  int),
+#("rtc month",   40001,  1,  int),
+#("rtc year",    40001,  1,  int),
 ]
 client = ModbusSerialClient(
     method='rtu',
@@ -26,14 +26,9 @@ def connect():
      retVal =  client.connect()
      return retVal
 def readRegisters():
-    for register in register_list:
         '''Reading from a holding register with the below content.'''
-        res = client.read_holding_registers(register[REGISTER], register[COUNT], slave = SLAVE_ID)
-        if not res.isError():
-            result = client.convert_from_registers(res, register[[DATA_TYPE]])
-            print(register[0], result, '\n')
-        else:
-            print(res)
+        res = client.read_holding_registers(1, 2, slave = SLAVE_ID)
+        print(res)
 def main():
     # Connect
     if connect():
